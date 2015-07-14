@@ -2,8 +2,8 @@
 using System.Collections;
 using UnityEditor;
 
-[CustomEditor(typeof(Worm))]
-public class WormEditor : Editor {
+[CustomEditor(typeof(ElephantTrunk))]
+public class ElephantTrunkEditor : Editor {
 	public override void OnInspectorGUI() {
 		base.OnInspectorGUI();
 
@@ -49,19 +49,19 @@ public class WormEditor : Editor {
 	private void PositionHinge(Segment segment) {
 		HingeJoint2D hingeJoint = GetHingeJoint(segment);
 		Segment connectedSegment = GetConnectedSegment(segment);
-		float boxColliderWidth = GetBoxColliderWidth(segment);
+		float colliderHeight = GetColliderHeight(segment);
 		Vector2 anchor = Vector2.zero;
 		Vector2 connectedAnchor = Vector2.zero;
-		Vector2 wormPosition = (target as Worm).transform.position;
+		Vector2 trunkPosition = (target as ElephantTrunk).transform.position;
 
 		if (segment.GetSegmentType() == SegmentType.BaseSegment) {
-			anchor.x = -boxColliderWidth / 2f;
-			connectedAnchor = wormPosition;
+			anchor.y = -colliderHeight / 2f;
+			connectedAnchor = trunkPosition;
 		}
 		else if (segment.GetSegmentType() == SegmentType.Segment) {
-			float connectedBoxColliderWidth = GetBoxColliderWidth(connectedSegment);
-			anchor.x = -boxColliderWidth / 2f;
-			connectedAnchor.x = connectedBoxColliderWidth / 2f;
+			float connectedColliderHeight = GetColliderHeight(connectedSegment);
+			anchor.y = -colliderHeight / 2f;
+			connectedAnchor.y = connectedColliderHeight / 2f;
 		}
 
 		hingeJoint.anchor = anchor;
@@ -69,15 +69,15 @@ public class WormEditor : Editor {
 	}
 
 	private void PositionSegment(Segment segment, ref Vector2 position) {
-		float halfSegmentWidth = GetScaledSegmentWidth(segment) / 2f;
-		position.x += halfSegmentWidth;
+		float halfSegmentHeight = GetColliderHeight(segment) / 2f;
+		position.y += halfSegmentHeight;
 		segment.transform.localPosition = position;
 		segment.transform.localRotation = Quaternion.identity;
-		position.x += halfSegmentWidth;
+		position.y += halfSegmentHeight;
 	}
 
 	private Segment[] GetAllSegments() {
-		Worm worm = target as Worm;
+		ElephantTrunk worm = target as ElephantTrunk;
 		return worm.GetComponentsInChildren<Segment>();
 	}
 
@@ -96,14 +96,16 @@ public class WormEditor : Editor {
 		return segment.GetComponent<BoxCollider2D>();
 	}
 
-	private float GetScaledSegmentWidth(Segment segment) {
-		BoxCollider2D boxCollider = segment.GetComponent<BoxCollider2D>();
-		return boxCollider.size.x * segment.transform.localScale.x;
-	}
+	private float GetColliderHeight(Segment segment) {
+		float height = 0;
 
-	private float GetBoxColliderWidth(Segment segment) {
+		CircleCollider2D circleCollider = segment.GetComponent<CircleCollider2D>();
+		if (circleCollider != null) height = circleCollider.radius * 2;
+
 		BoxCollider2D boxCollider = segment.GetComponent<BoxCollider2D>();
-		return boxCollider.size.x;
+		height = boxCollider.size.y;
+
+		return height;
 	}
 	
 	private HingeJoint2D GetHingeJoint(Segment segment) {

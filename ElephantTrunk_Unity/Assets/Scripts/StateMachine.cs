@@ -85,7 +85,6 @@ public class StateMachine : MonoBehaviour {
             currentStateDelegates[methodRoot] = currentStateDelegate;
         }
         return currentStateDelegate as T;
-
     }
 
     protected virtual void PreUpdateState() {}

@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour {
 	[SerializeField] private Score score;
 
 	void Awake() {
+		Application.targetFrameRate = 60;
 		ball.SignalEnteredScoreTrigger += HandleBallEnteredScoreTrigger;
 	}
 
@@ -21,7 +22,7 @@ public class GameManager : MonoBehaviour {
 		score.Increment();
 	}
 
-	private void Reset() {
+	public void Reset() {
 		ball.Reset();
 		score.Reset();
 	}

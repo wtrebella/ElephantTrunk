@@ -4,6 +4,8 @@ using System;
 
 public class Ball : StateMachine {
 	public Action SignalEnteredScoreTrigger;
+	public Action SignalWentOffscreen;
+	public Action SignalCameOnscreen;
 
 	private enum BallStates {Init, InGame};
 	private Vector3 initialPosition;
@@ -19,6 +21,16 @@ public class Ball : StateMachine {
 			else {
 				if (SignalEnteredScoreTrigger != null) SignalEnteredScoreTrigger();
 			}
+		}
+
+		if (collider.CompareTag("OffscreenTrigger")) {
+			if (SignalWentOffscreen != null) SignalWentOffscreen();
+		}
+	}
+
+	private void OnTriggerExit2D(Collider2D collider) {
+		if (collider.CompareTag("OffscreenTrigger")) {
+			if (SignalCameOnscreen != null) SignalCameOnscreen();
 		}
 	}
 
